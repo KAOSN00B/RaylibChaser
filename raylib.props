@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Change this if you move your raylib installation. -->
+    <RaylibSourceDir Condition="'$(RaylibSourceDir)'==''">C:\raylib\raylib\src\</RaylibSourceDir>
+    <RaylibLibraryDir>$(MSBuildThisFileDirectory)build\raylib\lib\$(Platform)\$(Configuration)\</RaylibLibraryDir>
+  </PropertyGroup>
+</Project>
