@@ -58,6 +58,7 @@
     <ClCompile Include="$(RaylibSourceDir)rmodels.c" />
     <ClCompile Include="$(RaylibSourceDir)raudio.c" />
     <ClCompile Include="$(RaylibSourceDir)rglfw.c" />
+	  <ClCompile Include="$(RaylibSourceDir)utils.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="VerifyRaylibSource" BeforeTargets="PrepareForBuild">

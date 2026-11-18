@@ -130,6 +130,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Navigation.cpp" />
+    <ClCompile Include="World.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="ChaserAI.cpp" />
+    <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="Debug.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Navigation.h" />
+    <ClInclude Include="World.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="ChaserAI.h" />
+    <ClInclude Include="Collision.h" />
+    <ClInclude Include="Debug.h" />
   </ItemGroup>
   <ItemDefinitionGroup>
     <ClCompile>
