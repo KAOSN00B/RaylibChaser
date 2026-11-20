@@ -7,10 +7,12 @@
 #include "Player.h"
 #include "ChaserAI.h"
 #include "Collision.h"
+#include "Score.h"
 #include "Debug.h"
 
 void Update(Player& player, std::vector<ChaserAI>& chasers, const NavigationGrid& navigation,
-	const Camera3D& camera, const std::vector<PlatformCube>& obstacles);
+	const Camera3D& camera, const std::vector<PlatformCube>& obstacles, Score& score,
+	const ArenaBounds& arenaBounds, float deltaTime);
 
 int main()
 {
@@ -24,26 +26,32 @@ int main()
 	// Create a 3D camera
 	Camera3D camera = { 0 };
 
-	camera.position = { -12.0f, 14.0f, 12.0f };
-	camera.target = { 0.0f, 0.0f, 0.0f };
-	camera.up = { 0.0f, 1.0f, 0.0f };
-	camera.fovy = 60.0f;
-	camera.projection = CAMERA_PERSPECTIVE;
+	camera.position = { -10.0f, 14.0f, 12.0f };
+	camera.target = { 0.0f, 4.0f, 0.0f };
+	camera.up = { 0.0f, 3.0f, 0.0f };
+	camera.fovy = 35.0f;
+	camera.projection = CAMERA_ORTHOGRAPHIC;
 
 	NavigationGrid navigation(100, 100);
 
 	Player player;
-	std::vector<ChaserAI> chasers = { ChaserAI({-1.0f, 0.0f, -3.0f}, 0.50f, 3.0f, BLUE),
-		ChaserAI({ 3.0f, 0.0f, 1.0f }, 0.50f, 3.0f, DARKBLUE),
-		ChaserAI({ 7.0f, 0.0f, 2.0f }, 0.50f, 3.0f, DARKBLUE) };
+	std::vector<ChaserAI> chasers = { ChaserAI({-1.0f, 0.0f, -3.0f}, 1.0f, 3.0f, DARKBLUE) };
+
 
 	std::vector<PlatformCube> obstacles = CreateObstacles();
+	ArenaBounds arenaBounds = GetArenaBounds(obstacles, -3.0f);
+	Score score;
 
+		
+	
 	navigation.MarkObstacles(obstacles);
 
 	while (!WindowShouldClose())
 	{
-		Update(player, chasers, navigation, camera, obstacles);
+		float deltaTime = GetFrameTime();
+		score.Update(deltaTime);
+		Update(player, chasers, navigation, camera, obstacles, score, arenaBounds, deltaTime);
+		
 	}
 
 	CloseWindow();
@@ -51,11 +59,12 @@ int main()
 }
 
 void Update(Player& player, std::vector<ChaserAI>& chasers, const NavigationGrid& navigation,
-	const Camera3D& camera, const std::vector<PlatformCube>& obstacles)
+	const Camera3D& camera, const std::vector<PlatformCube>& obstacles, Score& score,
+	const ArenaBounds& arenaBounds, float deltaTime)
 {
 	Vector3 previousPos = player.position;
 
-	float deltaTime = GetFrameTime();
+
 
 	static bool showNavigation = false;
 
@@ -65,17 +74,40 @@ void Update(Player& player, std::vector<ChaserAI>& chasers, const NavigationGrid
 	}
 
 
-	player.HandleInput(camera, deltaTime);
+	player.HandleInput(camera, deltaTime, arenaBounds);
 
 	player.UpdatePhysics(deltaTime);
+
+
 
 	for (const PlatformCube& obstacle : obstacles)
 	{
 		if (Collision::IsColliding(player, obstacle))
 		{
-			Collision::ResolveCollision(player, obstacle, previousPos);
-		}
+			Collision::ResolveCollision(player, obstacle, previousPos, score);
+		}	
+
+		
 	}
+
+	static bool wasColliding = false; // persists between Update calls
+
+	bool isColliding = Collision::IsColliding(player, score);
+
+	if (isColliding && !wasColliding && score.state == Available)
+	{
+		score.AddScore(score.scoreAmount); // just entered
+		score.state = Respawn;
+		score.isCollected = true;
+	}
+
+	if (!isColliding && wasColliding && score.state == Respawn)
+	{
+		// just exited
+	}
+
+	wasColliding = isColliding;
+
 
 
 	// Update every enemy independently before drawing the scene.
@@ -97,18 +129,23 @@ void Update(Player& player, std::vector<ChaserAI>& chasers, const NavigationGrid
 	}
 
 	player.Draw();
+	score.Draw();
+
 
 	for (const ChaserAI& chaser : chasers)
 	{
 		chaser.Draw();
 	}
 
+
 	DrawObstacles(obstacles);
+	DrawArenaWalls(arenaBounds, 4.0f);
 	DrawGround();
 
 	EndMode3D();
 
 	DebugMessage();
+	DrawScoreHUD(score.totalScore);
 
 	EndDrawing();
 }

@@ -8,3 +8,6 @@
 // On-screen debug text and navigation-grid visualization, toggled with F1.
 void DebugMessage();
 void DebugNavigation(const NavigationGrid& navigation, const std::vector<ChaserAI>& chasers, const Player& player);
+
+// Draws the player's current score in the top-left corner.
+void DrawScoreHUD(int totalScore);

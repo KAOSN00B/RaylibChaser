@@ -1,4 +1,5 @@
 #include "Collision.h"
+#include "Score.h"
 #include <iostream>
 
 namespace
@@ -92,7 +93,7 @@ namespace Collision
 
 	}
 
-	void ResolveCollision(Player& player, const PlatformCube& platform, const Vector3 previousPos)
+	void ResolveCollision(Player& player, const PlatformCube& platform, const Vector3 previousPos, Score& score)
 	{
 		Vector3 playerPreviousMin =
 		{
@@ -120,9 +121,63 @@ namespace Collision
 			platform.position.y + platform.size.y / 2.0f,
 			platform.position.z + platform.size.z / 2.0f
 		};
+		Vector3 scoreMin =
+		{
+			score.position.x - score.size.x / 2.0f,
+			score.position.y - score.size.y / 2.0f,
+			score.position.z - score.size.z / 2.0f
+		};
+
+		Vector3 scoreMax =
+		{
+			score.position.x + score.size.x / 2.0f,
+			score.position.y + score.size.y / 2.0f,
+			score.position.z + score.size.z / 2.0f
+		};
 
 		ResolveXCollision(playerPreviousMax, platformMin, player, playerPreviousMin, platformMax);
 		ResolveYCollision(playerPreviousMax, platformMin, player, playerPreviousMin, platformMax);
 		ResolveZCollision(playerPreviousMax, platformMin, player, playerPreviousMin, platformMax);
+
+		
+	}
+
+	bool IsColliding(Player& player, Score& score)
+	{
+
+		BoundingBox playerBox{
+			{
+				player.position.x - player.size.x / 2.0f,
+				player.position.y - player.size.y / 2.0f,
+				player.position.z - player.size.z / 2.0f
+			},
+			{
+				player.position.x + player.size.x / 2.0f,
+				player.position.y + player.size.y / 2.0f,
+				player.position.z + player.size.z / 2.0f
+			}
+		};
+
+		BoundingBox scoreBox{
+			{
+				score.position.x - score.size.x / 2.0f,
+				score.position.y - score.size.y / 2.0f,
+				score.position.z - score.size.z / 2.0f
+			},
+			{
+				score.position.x + score.size.x / 2.0f,
+				score.position.y + score.size.y / 2.0f,
+				score.position.z + score.size.z / 2.0f
+			}
+		};
+	
+
+		if (!CheckCollisionBoxes(playerBox, scoreBox))
+		{
+			return false;
+		}
+		
+
+		return true;
 	}
 }

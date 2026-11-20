@@ -1,5 +1,6 @@
 #include "ChaserAI.h"
 #include "raymath.h"
+#include "Score.h"
 
 ChaserAI::ChaserAI(Vector3 position, float radius, float moveSpeed, Color color)
 	: position(position), radius(radius), moveSpeed(moveSpeed), color(color)

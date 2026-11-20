@@ -20,6 +20,24 @@ void DebugMessage()
 	DrawText(message, x, y, fontSize, WHITE);
 }
 
+void DrawScoreHUD(int totalScore)
+{
+	const char* scoreText = TextFormat("Score: %d", totalScore);
+
+	int x = 10;
+	int y = 10;
+	int fontSize = 28;
+
+	// Black outline (1 pixel in each direction)
+	DrawText(scoreText, x - 1, y, fontSize, BLACK);
+	DrawText(scoreText, x + 1, y, fontSize, BLACK);
+	DrawText(scoreText, x, y - 1, fontSize, BLACK);
+	DrawText(scoreText, x, y + 1, fontSize, BLACK);
+
+	// White text on top
+	DrawText(scoreText, x, y, fontSize, WHITE);
+}
+
 void DebugNavigation(const NavigationGrid& navigation, const std::vector<ChaserAI>& chasers, const Player& player)
 {
 	const std::vector<std::vector<Node>>& grid = navigation.GetGrid();

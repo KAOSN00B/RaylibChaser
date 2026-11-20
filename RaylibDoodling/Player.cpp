@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "raymath.h"
 
-void Player::HandleInput(const Camera3D& camera, float deltaTime)
+void Player::HandleInput(const Camera3D& camera, float deltaTime, const ArenaBounds& bounds)
 {
 	Vector3 forward = Vector3Subtract(camera.target, camera.position);
 	forward.y = 0.0f;
@@ -27,11 +27,17 @@ void Player::HandleInput(const Camera3D& camera, float deltaTime)
 		position.x -= right.x * moveSpeed * deltaTime;
 		position.z -= right.z * moveSpeed * deltaTime;
 	}
-	if (IsKeyDown(KEY_D))
+	else if (IsKeyDown(KEY_D))
 	{
 		position.x += right.x * moveSpeed * deltaTime;
 		position.z += right.z * moveSpeed * deltaTime;
 	}
+
+	// Keep the player inside the wall that wraps the obstacle layout.
+	if (position.x < bounds.minX) position.x = bounds.minX;
+	if (position.x > bounds.maxX) position.x = bounds.maxX;
+	if (position.z < bounds.minZ) position.z = bounds.minZ;
+	if (position.z > bounds.maxZ) position.z = bounds.maxZ;
 
 	// Start jump
 	if (IsKeyPressed(KEY_SPACE) && canJump)
@@ -65,7 +71,7 @@ void Player::UpdatePhysics(float deltaTime)
 		// Update position
 		position.y += velocity.y * deltaTime;
 	}
-}
+} 
 
 void Player::Draw() const
 {
