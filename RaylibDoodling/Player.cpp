@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "raymath.h"
+#include <iostream>
 
 void Player::HandleInput(const Camera3D& camera, float deltaTime, const ArenaBounds& bounds)
 {
@@ -42,6 +43,7 @@ void Player::HandleInput(const Camera3D& camera, float deltaTime, const ArenaBou
 	// Start jump
 	if (IsKeyPressed(KEY_SPACE) && canJump)
 	{
+		std::cout << "Player is Jumping";
 		velocity.y = jumpForce;
 		canJump = false;
 	}
@@ -49,31 +51,64 @@ void Player::HandleInput(const Camera3D& camera, float deltaTime, const ArenaBou
 
 void Player::UpdatePhysics(float deltaTime)
 {
-	float currentGravity = gravity;
+	float groundHeight = size.y / 2.0f;
 
-
-	// Landing
-	if (position.y <= 0.0f)
+	// Apply gravity while airborne
+	if (!canJump)
 	{
-		position.y = 0.0f;
-		velocity.y = 0.0f;
-		canJump = true;
-	}
+		float currentGravity = gravity;
 
-	// Shorten jump when Space isn't held
-	if (IsKeyUp(KEY_SPACE) && velocity.y > 0.0f)
-	{
-		currentGravity *= 2.0f;
+		// Release Space early for a shorter jump
+		if (IsKeyUp(KEY_SPACE) && velocity.y > 0.0f)
+		{
+			currentGravity *= 2.0f;
+		}
 
 		// Apply gravity
 		velocity.y -= currentGravity * deltaTime;
 
-		// Update position
+		// Move player vertically
 		position.y += velocity.y * deltaTime;
 	}
-} 
+
+	// Landing
+	if (position.y <= groundHeight && velocity.y <= 0.0f)
+	{
+		position.y = groundHeight;
+		velocity.y = 0.0f;
+		canJump = true;
+	}
+}
 
 void Player::Draw() const
 {
 	DrawCube(position, size.x, size.y, size.z, color);
+}
+
+BoundingBox Player::GetBounds() const
+{
+	BoundingBox box;
+
+	box.min = {
+		position.x - size.x / 2.0f,
+		position.y - size.y / 2.0f,
+		position.z - size.z / 2.0f
+	};
+
+	box.max = {
+		position.x + size.x / 2.0f,
+		position.y + size.y / 2.0f,
+		position.z + size.z / 2.0f
+	};
+
+	return box;
+}
+
+void Player::RestartGame(Score& score)
+{
+	position = { 0.0f, 0.0f, 0.0f };
+	velocity = { 0.0f, 0.0f, 0.0f };
+	canJump = true;
+
+	score.totalScore = 0;
 }

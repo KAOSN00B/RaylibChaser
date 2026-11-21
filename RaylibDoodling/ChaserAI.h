@@ -21,6 +21,8 @@ public:
 
 	void Draw() const;
 
+	void Restart();
+
 	Vector3 position;
 	float radius;
 	float moveSpeed;

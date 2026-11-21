@@ -139,6 +139,7 @@
     <ClCompile Include="Debug.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Navigation.h" />
     <ClInclude Include="Score.h" />
     <ClInclude Include="World.h" />
